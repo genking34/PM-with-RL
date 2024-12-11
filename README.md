@@ -105,5 +105,3 @@ More results and detailed analysis can be found in the project directory.
 - **pandas**
 - **matplotlib**
 
-## Contact
-For any questions, please refer to the relevant project files or documentation.
