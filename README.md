@@ -1,128 +1,109 @@
-# Reinforcement learning in portfolio management
+
+# Reinforcement Learning in Portfolio Management
 
 ## Introduction
 
-Motivated by "A Deep Reinforcement Learning Framework for the Financial Portfolio Management Problem" by [Jiang et. al. 2017](https://arxiv.org/abs/1706.10059) [1]. In this project:
-+ Implement three state-of-art continous deep reinforcement learning algorithms, Deep Deterministic Policy Gradient (DDPG),Proximal Policy Optimization(PPO) and Policy Gradient (PG) in portfolio management. 
+This project implements three state-of-the-art continuous deep reinforcement learning algorithms, including Deep Deterministic Policy Gradient (DDPG), Proximal Policy Optimization (PPO), and Policy Gradient (PG), for portfolio management.
 
-+ Experiments on different settings, such as changing learning rates, optimizers, neutral network structures, China/America Stock data, initializers, noise, features to figure out their influence on the RL agents' performance(cumulative return).
+The project explores the performance of these algorithms under various settings, such as changes in learning rates, optimizers, network structures, stock market data, initializers, noise, and features, to assess their influence on the agents' performance (cumulative return).
 
-  In this paper, we implement three state-of-art continuous reinforcement learning algorithms, Deep Deterministic Policy Gradient (DDPG), Proximal Policy Optimization (PPO) and Policy Gradient (PG)in portfolio management. All of them are widely-used in game playing and robot control. What's more, PPO has appealing theoretical propeties which is hopefully potential in portfolio management. We present the performances of them under different settings, including different learning rates, objective functions, feature combinations, in order to provide insights for parameters tuning, features selection and data preparation. We also conduct intensive experiments in China Stock market and show that PG is more desirable in financial market than DDPG and PPO, although both of them are more advanced. What's more, we propose a so called Adversarial Training method and show that it can greatly improve the training efficiency and significantly promote average daily return and sharpe ratio in back test. Based on this new modification, our experiments results show that our agent based on Policy Gradient can outperform UCRP.
-## Using the environment
+## Using the Environment
 
-The environment provides supports for easily testing different reinforcement learning in portfolio management.
-+ main.py -  the entrance to run our training and testing framework
-+ ./saved_network- contains different saved models after training, with DDPG and PPO sub folders
-+ ./summary- contains summaries, also with DDPG and PPO sub folder
-+ ./agent- contains ddpg.py, ppo.py and ornstein_uhlenbeck.py(the noise we add to agent's actions during training)
-+ ./data- contains America.csv for USA stock data, China.csv for China stock data. download_data.py can download China stock data by Tushare. environment.py generates states data for trading agents.
-+ config.json- the configuration file for training or testing settings:
-```
+The environment supports testing different reinforcement learning strategies for portfolio management.
+
+### File Structure
+- **main.py** - Entry point for running training and testing.
+- **./saved_network/** - Directory containing saved models for DDPG and PPO.
+- **./summary/** - Contains summary files for DDPG and PPO.
+- **./agent/** - Contains `ddpg.py`, `ppo.py`, and `ornstein_uhlenbeck.py` (for adding noise to agent actions during training).
+- **./data/** - Contains `America.csv` for USA stock data and `China.csv` for China stock data. The `download_data.py` script can download China stock data using Tushare. The `environment.py` file generates states for trading agents.
+- **config.json** - Configuration file for training or testing settings.
+
+Example of `config.json`:
+```json
 {
-	"data":{
-		"start_date":"2015-01-01",
-		"end_date":"2018-01-01",
-		"market_types":["stock"],
-		"ktype":"D"
-	},
-	"session":{
-		"start_date":"2015-01-05",
-		"end_date":"2017-01-01",
-		"market_types":"America",
-	    "codes":["AAPL","ADBE","BABA","SNE","V"],
-		"features":["close"],
-		"agents":["CNN","DDPG","3"],
-		"epochs":"10000",
-		"noise_flag":"False",
-		"record_flag":"False",
-		"plot_flag":"False",
-		"reload_flag":"False",
-		"trainable":"True",
-		"method":"model_free"
-	}
+    "data":{
+        "start_date":"2015-01-01",
+        "end_date":"2018-01-01",
+        "market_types":["stock"],
+        "ktype":"D"
+    },
+    "session":{
+        "start_date":"2015-01-05",
+        "end_date":"2017-01-01",
+        "market_types":"America",
+        "codes":["AAPL","ADBE","BABA","SNE","V"],
+        "features":["close"],
+        "agents":["CNN","DDPG","3"],
+        "epochs":"10000",
+        "noise_flag":"False",
+        "record_flag":"False",
+        "plot_flag":"False",
+        "reload_flag":"False",
+        "trainable":"True",
+        "method":"model_free"
+    }
 }
 ```
 
-Download stock data in shenzhen and shanghai stock market in the given period in Day(D) frequency. Options: hours, minutes
+## Commands
+
+### Download Stock Data
+Download stock data for Shenzhen and Shanghai stock markets during the specified period (daily frequency):
 ```
 python main.py --mode=download_data
 ```
-Training/Testing
+
+### Training
+Train reinforcement learning agents using the following command:
 ```
 python main.py --mode=train
 ```
 
+### Testing
+Test the trained agents with the following command:
 ```
 python main.py --mode=test
 ```
-+ noise_flag=True: actions produced by RL agents are distorted by adding UO noise.
-+ record_flag=True: trading details would be stored as a csv file named by the epoch and cumulative return each epoch.
-+ plot_flag=True: the trend of wealth would be plot each epoch.
-+ reload_flag=True: tensorflow would search latest saved model in ./saved_network and reload.
-+ trainable=True: parameters would be updated during each epoch.
-+ method=model_based: the first epochs our agents would try to imitate a greedy strategy to quickly improve its performance. Then it would leave it and continue to self-improve by model-free reinforcement learning.
 
-## Result
-+ Training data (USA)
-  ![USA](result/USA.png)
+### Configurable Flags
+- **noise_flag=True**: Adds Ornstein-Uhlenbeck noise to agent actions.
+- **record_flag=True**: Stores trading details as a CSV file named by epoch and cumulative return.
+- **plot_flag=True**: Plots the trend of wealth for each epoch.
+- **reload_flag=True**: Reloads the latest saved model from `./saved_network/`.
+- **trainable=True**: Updates parameters during each epoch.
+- **method=model_based**: The agent initially follows a greedy strategy to quickly improve performance before shifting to model-free reinforcement learning.
 
-+ Training data (China)
-  ![China](result/China.png)
+## Results
 
-+ Adversarial Training
+### Training Data (USA)
+![USA](result/USA.png)
 
-  ![noise](result/noise.png)
+### Training Data (China)
+![China](result/China.png)
 
-+ Backtest (China)
-  ![Final](result/Final.png)
+### Adversarial Training
+![noise](result/noise.png)
 
-  ![56](result/56.png)
+### Backtest (China)
+![Final](result/Final.png)
+![56](result/56.png)
 
-+ APV under different feature combinations
-  ![features_reward](result/features_reward.png)
+### APV Under Different Feature Combinations
+![features_reward](result/features_reward.png)
 
-**The other results can be found in our paper.**
-(http://arxiv.org/abs/1808.09940)
+More results and detailed analysis can be found in the project directory.
 
+## Set Up
 
+### Python Version
+- **3.6**
 
-
-
-## Contribution
-
-### Contributors
-
-* ***Zhipeng Liang***
-* ***Hao Chen***
-* ***Junhao Zhu***
-* ***Kangkang Jiang***
-* ***Yanran Li***
-### Institutions
-
-+ ***AI&FintechLab of Likelihood Technology***
-+ ***Sun Yat-sen University***
-
-## Acknowledegment
-
-We would like to say thanks to ***Mingwen Liu*** from ***ShingingMidas Private Fund***, ***Zheng Xie*** and ***Xingyu Fu*** from ***Sun Yat-sen University*** for their generous guidance throughout the project.
-
-## Set up
-
-Python Version
-
-+ ***3.6***
-
-Modules needed
-
-+ ***tensorflow(tensorflow-gpu)***
-+ ***numpy*** 
-+ ***pandas*** 
-+ ***matplotlib***
+### Required Modules
+- **tensorflow** (or **tensorflow-gpu** for GPU support)
+- **numpy**
+- **pandas**
+- **matplotlib**
 
 ## Contact
-
-+ liangzhp6@mail2.sysu.edu.cn
-+ chenh348@mail2.sysu.edu.cn
-+ zhujh25@mail2.sysu.edu.cn
-+ jiangkk3@mail2.sysu.edu.cn
-+ liyr8@mail2.sysu.edu.cn
+For any questions, please refer to the relevant project files or documentation.
